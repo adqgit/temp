@@ -22,21 +22,25 @@ const Home = () => {
   const [rate, setRate] = useState("");
 
   const handleAmountChange = (e) => {
-    
-    setAmount(e.target.value)
+
+    const inputValue = e.target.value;
+    if(!!inputValue.match(/(?=.)^\$?(([1-9][0-9]{0,2}(,[0-9]{3})*)|0)?(\.[0-9]{1,2})?$/)){
+      setAmount(inputValue)
+    }
   }
 
 
-    const activeCurrencies = currencies.map(currency => <Option key = {currency}value = {currency}>{currency}</Option>)
+    const activeFirstCurrencies = currencies.map(currency => <Option disabled = {currency === secondCurrency ? true : false}  key = {currency}value = {currency}>{currency}</Option>)
+    const activeSecondCurrencies = currencies.map(currency => <Option disabled = {currency === firstCurrency ? true : false} key = {currency}value = {currency}>{currency}</Option>)
     return (
       <>
         <Input placeholder="Podaj kwotę" style={{ width: '25%' }} onChange={handleAmountChange} value = {amount} />
         <Select disabled = {amount === "" ? true : false} defaultValue="EUR" style={{ width: 120 }} onChange={handleChangeFirstCurrency}>
-            {activeCurrencies}
+            {activeFirstCurrencies}
         </Select>
         <Text strong > Przelicz na: </Text>
         <Select disabled = {amount === "" ? true : false} defaultValue="PLN" style={{ width: 120 }} onChange={handleChangeSecondCurrency}>
-           {activeCurrencies}
+           {activeSecondCurrencies}
         </Select>
 
         <Button disabled = {amount === "" ? true : false} onClick = {() => handleSubmit()}>Przelicz <CheckCircleTwoTone twoToneColor="#52c41a" /></Button>
@@ -74,6 +78,7 @@ const Home = () => {
       content: `Zapisano: ${amount} ${firstCurrency} * ${rate} kwota: ${(amount * rate).toFixed(2)} ${secondCurrency}`,
     });
   }
+
 
   function handleSaveButton() {
     const result = (amount * rate).toFixed(2);
