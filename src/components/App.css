@@ -79,6 +79,7 @@ section{
 }
 
 li {
-    
+    font-size: 14px;
     list-style-type: none;
+    transform: rotate();
 }

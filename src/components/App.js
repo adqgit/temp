@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, NavLink, Route } from 'react-router-dom'
 import './App.css';
-import { Select, Button, Input, Typography, Switch, Tooltip, Modal, Slider } from 'antd';
-import {  CheckCircleTwoTone, PushpinTwoTone, DeleteOutlined  } from '@ant-design/icons';
+import { Select, Button, Input, Typography, Switch, Tooltip, Modal } from 'antd';
+import {  CheckCircleTwoTone, PushpinTwoTone  } from '@ant-design/icons';
 
 
 const { Text } = Typography;
@@ -10,6 +10,7 @@ const { Option } = Select;
 
 const currencies = ["EUR","PLN","GBP", "SEK", "AUD", "HUF", "RUB", "NOK", "CZK", "DKK", "CHF", "JPY"];
 const savedQueries = [];
+let id = 0; 
 
 
 const Home = () => {
@@ -24,7 +25,6 @@ const Home = () => {
     
     setAmount(e.target.value)
   }
-
 
 
     const activeCurrencies = currencies.map(currency => <Option key = {currency}value = {currency}>{currency}</Option>)
@@ -79,30 +79,17 @@ const Home = () => {
     const result = (amount * rate).toFixed(2);
 
     const query = {
+      id,
       amount,
       firstCurrency,
       rate,
       result,
       secondCurrency
     }
-
+    id++;
     savedQueries.push(query);
-
-    // localStorage.setItem(key, JSON.stringify(query));
-    // key++;
-
-    console.log(savedQueries);
     success();
     };
-
-
-
-
-
-
-
-
-
 
 
   function handleChangeFirstCurrency(value) {
@@ -154,58 +141,41 @@ const Home = () => {
 
 const History = () =>  {
 
-
    return (
+    
      <div className = "history">
             <ul>
                   {
                     savedQueries.map(query =>
-                      <li key={query.amount}>Kwota: <strong> {query.amount} {query.firstCurrency} </strong> * <strong> {query.rate}</strong> Otrzymana kwota:<strong> {query.result} {query.secondCurrency}</strong> <DeleteOutlined onClick = {handleDeleteHistoryItem}/> </li>
+                      <li key={query.id}>Kwota: <strong> {query.amount} {query.firstCurrency} </strong> * <strong> {query.rate}</strong> Otrzymana kwota:<strong> {query.result} {query.secondCurrency}</strong>  </li>
                     )
                   }
           </ul>
     </div>
    )
-
-
-   function handleDeleteHistoryItem() {
-    console.log ("usuwam");
-
-    // const newSavedQueries = [...savedQueries]
-    // newSavedQueries.splice(
-    //   newSavedQueries.findIndex(item => item.id === id),
-    //   1
-    // )
-    
-
-   }
-
-
-   
   }
 
 
-const Settings = () => {
+const Settings = props => {
   return (
     <>
-      <label>Automatyczne przeliczanie: <Switch  onChange={onChange}/></label>
-      <Slider defaultValue={30} onChange={handleSlider} />
+      <section><label>Pokaż / ukryj historię: <Switch checked = {props.showHistory} onChange={() => props.setShowHistory(prev => !prev)}/></label></section>
+      <section><label>Pokaż / ukryj Main Page: <Switch checked = {props.showHome}   onChange={() => props.setShowHome(prev => !prev)}/></label></section>
+      <section><label>Pokaż / ukryj Settings: <Switch checked = {props.showSettings}   onChange={() => props.setShowSettings(prev => !prev)}/></label></section>
     </>
   )
-
-  function handleSlider(value) {
-    console.log(value);
-    // console.log(window)
-    
-  }
+  
 }
 
 
-function onChange(checked) {
-
-}
 
 function App() {
+
+  const [showHome, setShowHome] = useState(true);
+  const [showHistory, setShowHistory] = useState(true);
+  const [showSettings, setShowSettings] = useState(true);
+
+
   return (
     <Router>
         <div className = "main">
@@ -213,17 +183,21 @@ function App() {
           <header>
             <nav>
               <ul className= "ulFlex">
-                <li className = "flex"><NavLink exact to="/">Main page</NavLink></li>
-                <li className = "flex"><NavLink to="/history">History</NavLink></li>
-                <li className = "flex"><NavLink to="/settings">Settings</NavLink></li>
+                {showHome ? <li className = "flex"><NavLink exact to="/">Main page</NavLink></li> : null}
+                {showHistory ?  <li className = "flex"><NavLink to="/history">History</NavLink></li> : null}
+                {showSettings ? <li className = "flex"><NavLink to="/settings">Settings</NavLink></li> : null}
               </ul>
             </nav>
           </header>
+          { showHome === false && showSettings === false ?
+          <section>This exactly how Reflex works...</section>
+            :
           <section>
             <Route exact path = "/" component = {Home}/>
             <Route path = "/History" component = {History}/>
-            <Route path = "/Settings" component = {Settings}/>
+            <Route path = "/Settings" render = {() => <Settings showHome = {showHome} setShowHome = {setShowHome} showHistory = {showHistory} setShowHistory = {setShowHistory} showSettings = {showSettings} setShowSettings = {setShowSettings} />}/>
           </section>
+}
         </div>
     </Router>
   );
