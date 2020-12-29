@@ -25,14 +25,15 @@
   } */
 
 
-ul{
+.ulFlex{
     display: flex;
     list-style-type: none;
 }
+.flex {
 
-li {
     flex-grow: 1;
 }
+
 
 a {
     display: block;
@@ -70,4 +71,14 @@ section{
     position: absolute;
     bottom: 0.5%;
     right: 1%;
+}
+
+.history{
+    align-items: left;
+    text-align: center !important;
+}
+
+li {
+    
+    list-style-type: none;
 }

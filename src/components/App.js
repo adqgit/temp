@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, NavLink, Route } from 'react-router-dom'
 import './App.css';
-import { Select, Button, Input, Typography, Switch } from 'antd';
-import {  CheckCircleTwoTone } from '@ant-design/icons';
+import { Select, Button, Input, Typography, Switch, Tooltip, Modal, Slider } from 'antd';
+import {  CheckCircleTwoTone, PushpinTwoTone, DeleteOutlined  } from '@ant-design/icons';
 
 
 const { Text } = Typography;
 const { Option } = Select;
 
 const currencies = ["EUR","PLN","GBP", "SEK", "AUD", "HUF", "RUB", "NOK", "CZK", "DKK", "CHF", "JPY"];
-
+const savedQueries = [];
 
 
 const Home = () => {
-  const [amount, setAmount] = useState();
+  const [amount, setAmount] = useState("");
 
 
   const [firstCurrency, setFirstCurrency] = useState("EUR");
@@ -49,6 +49,11 @@ const Home = () => {
                   <p>Wybrana kwota: <strong>{amount} {firstCurrency}</strong> </p>
                   <p>Aktualny kurs: <strong>{firstCurrency} / {secondCurrency}</strong> to<strong> {rate}</strong></p>
                   <p>Po przeliczeniu otrzymasz: <strong>{(amount * rate).toFixed(2)} {secondCurrency}</strong></p>
+
+                  <Tooltip title="zapisz...">
+                  <Button icon={<PushpinTwoTone />} onClick={handleSaveButton}>Zapisz</Button>
+                  </Tooltip>
+
                   <p className="footer"> <a href = "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html" rel="noreferrer" target = "_blank">European Central Bank</a></p>
               </section>
             </>
@@ -61,6 +66,44 @@ const Home = () => {
         }
       </>
   )
+
+
+  function success() {
+
+    Modal.success({
+      content: `Zapisano: ${amount} ${firstCurrency} * ${rate} kwota: ${(amount * rate).toFixed(2)} ${secondCurrency}`,
+    });
+  }
+
+  function handleSaveButton() {
+    const result = (amount * rate).toFixed(2);
+
+    const query = {
+      amount,
+      firstCurrency,
+      rate,
+      result,
+      secondCurrency
+    }
+
+    savedQueries.push(query);
+
+    // localStorage.setItem(key, JSON.stringify(query));
+    // key++;
+
+    console.log(savedQueries);
+    success();
+    };
+
+
+
+
+
+
+
+
+
+
 
   function handleChangeFirstCurrency(value) {
 
@@ -100,9 +143,6 @@ const Home = () => {
     .then(response => response.json())
     .then(data => {
       setRate( (data.rates[secondCurrency]).toFixed(2) );
- 
- 
-
     } )
   
   
@@ -112,16 +152,52 @@ const Home = () => {
 
 
 
-const History = () => <p>historia</p>
+const History = () =>  {
 
+
+   return (
+     <div className = "history">
+            <ul>
+                  {
+                    savedQueries.map(query =>
+                      <li key={query.amount}>Kwota: <strong> {query.amount} {query.firstCurrency} </strong> * <strong> {query.rate}</strong> Otrzymana kwota:<strong> {query.result} {query.secondCurrency}</strong> <DeleteOutlined onClick = {handleDeleteHistoryItem}/> </li>
+                    )
+                  }
+          </ul>
+    </div>
+   )
+
+
+   function handleDeleteHistoryItem() {
+    console.log ("usuwam");
+
+    // const newSavedQueries = [...savedQueries]
+    // newSavedQueries.splice(
+    //   newSavedQueries.findIndex(item => item.id === id),
+    //   1
+    // )
+    
+
+   }
+
+
+   
+  }
 
 
 const Settings = () => {
   return (
     <>
       <label>Automatyczne przeliczanie: <Switch  onChange={onChange}/></label>
+      <Slider defaultValue={30} onChange={handleSlider} />
     </>
   )
+
+  function handleSlider(value) {
+    console.log(value);
+    // console.log(window)
+    
+  }
 }
 
 
@@ -136,10 +212,10 @@ function App() {
 
           <header>
             <nav>
-              <ul>
-                <li><NavLink exact to="/">Main page</NavLink></li>
-                <li><NavLink to="/history">History</NavLink></li>
-                <li><NavLink to="/settings">Settings</NavLink></li>
+              <ul className= "ulFlex">
+                <li className = "flex"><NavLink exact to="/">Main page</NavLink></li>
+                <li className = "flex"><NavLink to="/history">History</NavLink></li>
+                <li className = "flex"><NavLink to="/settings">Settings</NavLink></li>
               </ul>
             </nav>
           </header>
