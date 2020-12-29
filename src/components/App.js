@@ -31,11 +31,11 @@ const Home = () => {
     return (
       <>
         <Input placeholder="Podaj kwotę" style={{ width: '25%' }} onChange={handleAmountChange} value = {amount} />
-        <Select defaultValue="EUR" style={{ width: 120 }} onChange={handleChangeFirstCurrency}>
+        <Select disabled = {amount === "" ? true : false} defaultValue="EUR" style={{ width: 120 }} onChange={handleChangeFirstCurrency}>
             {activeCurrencies}
         </Select>
         <Text strong > Przelicz na: </Text>
-        <Select defaultValue="PLN" style={{ width: 120 }} onChange={handleChangeSecondCurrency}>
+        <Select disabled = {amount === "" ? true : false} defaultValue="PLN" style={{ width: 120 }} onChange={handleChangeSecondCurrency}>
            {activeCurrencies}
         </Select>
 
@@ -177,7 +177,7 @@ function App() {
 
 
   return (
-    <Router>
+    <Router basename = {process.env.PUBLIC_URL}>
         <div className = "main">
 
           <header>
