@@ -24,13 +24,37 @@ const Home = () => {
   const handleAmountChange = (e) => {
 
     const inputValue = e.target.value;
-    if(!!inputValue.match(/(?=.)^\$?(([1-9][0-9]{0,2}(,[0-9]{3})*)|0)?(\.[0-9]{1,2})?$/)){
+    const validRegex = /^[0-9]+(\.[0-9]{1,2})?$/;
+    
+    // if( validRegex.test(inputValue) === true ) {
+    //   console.log("dobrze")
+    // }else {
+    //   console.log("zle")
+    // }
+    
+    // const inputValidation = function() {
+    //   return validRegex.test(inputValue);
+    // } 
+    // console.log(inputValidation)
+
+    if(!!inputValue.match(/(?=.)^\$?(([1-9][0-9]{0,20}(,[0-9]{3})*)|0)?(\.[0-9]{1,2})?$/)){
       setAmount(inputValue)
+
+    }else{
+      console.log("babol")
     }
+    
+
+
+      
+
+    
+    // setAmount(e.target.value)
   }
 
 
     const activeFirstCurrencies = currencies.map(currency => <Option disabled = {currency === secondCurrency ? true : false}  key = {currency}value = {currency}>{currency}</Option>)
+    // const activeSecondCurrencies = currencies.map(currency => currency.filter((currency) =><Option key = {currency}value = {currency}>{currency}</Option>))
     const activeSecondCurrencies = currencies.map(currency => <Option disabled = {currency === firstCurrency ? true : false} key = {currency}value = {currency}>{currency}</Option>)
     return (
       <>
@@ -79,6 +103,12 @@ const Home = () => {
     });
   }
 
+  function warning() {
+    Modal.warning({
+      title: 'Błąd',
+      content: 'Prosze podać porawna wartość...',
+    });
+  }
 
   function handleSaveButton() {
     const result = (amount * rate).toFixed(2);
